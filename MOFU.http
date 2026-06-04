@@ -1,0 +1,6 @@
+@MOFU_HostAddress = http://localhost:5264
+
+GET {{MOFU_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
