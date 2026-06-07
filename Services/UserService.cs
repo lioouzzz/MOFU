@@ -91,7 +91,7 @@ namespace MOFU.Services
             var user = new Users
             {
                 UserName= createUser.UserName,
-                UserPassword=createUser.UserPassword,
+                UserPassword=BCrypt.Net.BCrypt.HashPassword(createUser.UserPassword),
                 UserEmail=createUser.UserEmail,
             };
 
@@ -193,7 +193,10 @@ namespace MOFU.Services
                 });
             }
 
-            if (user.UserPassword != dto.OldPassword)
+
+            var OldPasswordCorrect = BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.UserPassword);
+
+            if (!OldPasswordCorrect)
             {
                 _logger.Write(new Log
                 {
@@ -225,7 +228,7 @@ namespace MOFU.Services
                 return false;
             }
 
-            user.UserPassword = dto.NewPassword;
+            user.UserPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
 
             await _context.SaveChangesAsync();
             return true;
