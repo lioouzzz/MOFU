@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System.ComponentModel.DataAnnotations;
 
 namespace MOFU.Models
 {
@@ -10,7 +11,8 @@ namespace MOFU.Models
         public string UserPassword { get; set; } = "";
         public string UserEmail { get; set; } = "";
         public DateTime CreateAt { get; set; } = DateTime.Now;
-        public int? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
         public DateTime? DeleteAt { get; set; }
+        public List<ProjectMember> ProjectMember { get; set; } = new();
     }
 }

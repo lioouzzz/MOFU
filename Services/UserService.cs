@@ -10,10 +10,12 @@ namespace MOFU.Services
     {
         private readonly AppDbContext _context;
         private readonly FileLogger _logger;
-        public UserService(AppDbContext context, FileLogger logger)
+        private readonly JwtService _jwtService;
+        public UserService(AppDbContext context, FileLogger logger,JwtService jwtService)
         {
             _context = context;
-            _logger = logger;
+            _logger = logger; 
+            _jwtService = jwtService;
         }
 
         public async Task<List<UserDto>> GetUsers()
@@ -41,85 +43,6 @@ namespace MOFU.Services
                                 })
                                 .FirstOrDefaultAsync();
         }
-
-        public async Task<UserDto> CreateUser(CreateUserDto  createUser)
-        {
-            if (string.IsNullOrWhiteSpace(createUser.UserName))
-            {
-                _logger.Write(new Log
-                {
-                    Status = ApiResultStatus.Failed,
-                    Message = "新增 User 失敗",
-                    Data = new
-                    {
-                        Reason = "UserName 不可為空"
-                    }
-                });
-                return null;
-            }
-
-
-            if (string.IsNullOrWhiteSpace(createUser.UserEmail))
-            {
-                _logger.Write(new Log
-                {
-                    Status = ApiResultStatus.Failed,
-                    Message = "新增 User 失敗",
-                    Data = new
-                    {
-                        Reason = "Email 不可為空"
-                    }
-                });
-                return null;
-            }
-
-
-            if (string.IsNullOrWhiteSpace(createUser.UserPassword))
-            {
-                _logger.Write(new Log
-                {
-                    Status = ApiResultStatus.Failed,
-                    Message = "新增 User 失敗",
-                    Data = new
-                    {
-                        Reason = "UserPassword 不可為空"
-                    }
-                });
-                return null;
-            }
-
-            var user = new Users
-            {
-                UserName= createUser.UserName,
-                UserPassword=BCrypt.Net.BCrypt.HashPassword(createUser.UserPassword),
-                UserEmail=createUser.UserEmail,
-            };
-
-
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            _logger.Write(new Log {
-            Status=ApiResultStatus.Success,
-            Message=$"User創建成功: {user.UserName}",
-            Data =new {
-                    user.UserId,
-                    user.UserName,
-                    user.UserEmail,
-            }
-            });
-
-            var userDto = new UserDto
-            {
-                UserId = user.UserId,
-                UserName = user.UserName,
-                UserEmail = user.UserEmail,
-                CreateAt = user.CreateAt,
-            };
-            return userDto;
-        }
-
         public async Task<UserDto?> UpdateUser(int userId
             , UpdateUserDto updateUser)
         {
@@ -138,6 +61,8 @@ namespace MOFU.Services
                 });
                 return null;
             }
+
+
             if (!string.IsNullOrWhiteSpace(updateUser.UserName))
             {
                 user.UserName = updateUser.UserName;
@@ -254,7 +179,7 @@ namespace MOFU.Services
                 return false;
             }
 
-            user.IsDeleted = 1;
+            user.IsDeleted = true;
             user.DeleteAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();

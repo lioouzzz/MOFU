@@ -40,17 +40,7 @@ namespace MOFU.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto createUser)
-        {
-            var result = await _userService.CreateUser(createUser);
 
-            if (result == null)
-            {
-                return BadRequest("欄位不可為空");
-            }
-            return Ok(result);
-        }
 
         [HttpPatch("{userId}")]
         public async Task<IActionResult> UpdateUser([FromRoute] int userId

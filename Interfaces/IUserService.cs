@@ -6,7 +6,6 @@ namespace MOFU.Interfaces
     {
         Task<List<UserDto>> GetUsers();
         Task<UserDto?> GetUser(int userId);
-        Task<UserDto> CreateUser(CreateUserDto createUser);
         Task<UserDto?> UpdateUser(int userId
             , UpdateUserDto updateUser);
         Task<bool> UpdatePassword(int userId, UpdatePasswordDto dto);
