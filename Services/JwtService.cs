@@ -24,11 +24,11 @@ namespace MOFU.Services
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, users.UserId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, users.UserEmail),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, users.UserId.ToString()),
+                new Claim(ClaimTypes.Email, users.UserEmail),
                 new Claim(ClaimTypes.Name, users.UserName),
-                new Claim(JwtRegisteredClaimNames.Iat,users.CreateAt.ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                
             };
 
             var encodeKey=Encoding.UTF8.GetBytes(key);

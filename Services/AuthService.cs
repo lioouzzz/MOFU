@@ -106,7 +106,7 @@ namespace MOFU.Services
                 _logger.Write(new Log {
                     Status = ApiResultStatus.Failed,
                     Message = "Email填寫格式不正確",
-                    Data=loginDto.UserEmail
+                    
                 });
                 return null;
             }
@@ -117,12 +117,11 @@ namespace MOFU.Services
                 {
                     Status = ApiResultStatus.Failed,
                     Message = "UserPassword填寫格式不正確",
-                    Data = loginDto.UserPassword
                 });
                 return null;
             }
 
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserEmail == loginDto.UserEmail);
+            var user = await _context.Users.FirstOrDefaultAsync(users => users.UserEmail == loginDto.UserEmail);
 
             if (user == null)
             {
@@ -130,7 +129,7 @@ namespace MOFU.Services
                 {
                     Status = ApiResultStatus.Failed,
                     Message = "登入失敗，Email不存在",
-                    Data = new { user.UserId, user.UserName }
+                   
                 });
                 return null;
             }
@@ -146,6 +145,7 @@ namespace MOFU.Services
                     Message = "密碼驗證不通過",
                     Data = loginDto.UserEmail
                 });
+                return null;
             }
 
             //產生token

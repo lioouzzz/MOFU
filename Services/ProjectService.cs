@@ -17,7 +17,7 @@ namespace MOFU.Services
             _context = context;
         }
 
-        public async Task<ProjectDto> CreateProject(ProjectDto projectDto)
+        public async Task<ProjectDto> CreateProject(int userId,ProjectDto projectDto)
         {
             if (string.IsNullOrWhiteSpace(projectDto.ProjectName))
             {
@@ -42,28 +42,40 @@ namespace MOFU.Services
             var project = new Project
             {
                 ProjectName = projectDto.ProjectName,
-                ProjectKey = projectDto.ProjectKey,
-                ProjectMember = new List<ProjectMember>
-                {
-
-                }
+                ProjectKey = projectDto.ProjectKey
             };
-
             _context.Project.Add(project);
             await _context.SaveChangesAsync();
 
-            _logger.Write(new Log {
-                Status= ApiResultStatus.Success,
+
+            _logger.Write(new Log
+            {
+                Status = ApiResultStatus.Success,
                 Message = $"Project '{project.ProjectName}' 創建成功 和 ProjectId {project.ProjectId}.",
-                Data=new {
-                ProjectId= project.ProjectId,
-                ProjectName=projectDto.ProjectName,
+                Data = new
+                {
+                    ProjectId = project.ProjectId,
+                    ProjectName = projectDto.ProjectName,
                 }
             });
 
+
+            var projectMember = new ProjectMember
+            {
+                UserId = userId,
+                ProjectId = project.ProjectId,
+                Role = "Owner"
+            };
+
+            _context.ProjectMember.Add(projectMember);
+            await _context.SaveChangesAsync();
+
+
             var result = new ProjectDto
             {
+                ProjectKey=project.ProjectKey,
                 ProjectName = project.ProjectName,
+                CreateAt=project.CreateAt
             };
 
             return result;

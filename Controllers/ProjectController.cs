@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MOFU.Dto;
 using MOFU.Interfaces;
 using MOFU.Models;
+using System.Security.Claims;
+
 
 namespace MOFU.Controllers
 {
@@ -15,10 +19,23 @@ namespace MOFU.Controllers
             _service = service;
         }
 
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateProject(ProjectDto dto)
         {
-            var result =await _service.CreateProject(dto);
+            var user = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var userId=int.Parse(user);
+
+            // var userName = User.Identity?.Name;
+
+            if (userId == null)
+            {
+                return Unauthorized("找不到 UserId");
+            }
+
+            var result =await _service.CreateProject(userId, dto);
 
             if (result == null)
             {
